@@ -2,31 +2,23 @@
   "use strict";
 
   AR.Collectible = class {
-    constructor(x, y) {
-      this.x = x;
-      this.y = y;
-      this.w = 24;
-      this.h = 28;
-      this.collected = false;
-      this.time = Math.random() * Math.PI;
+    constructor(x, y, type = "gem", hidden = false) {
+      this.x = x; this.y = y; this.w = 24; this.h = 24; this.type = type; this.hidden = hidden;
+      this.collected = false; this.t = Math.random() * 10;
     }
-    update(dt) {
-      this.time += dt * 4;
-    }
-    draw(c, camera) {
+    update(dt) { this.t += dt; }
+    draw(c, camera, player) {
       if (this.collected) return;
-      const x = this.x - camera.x, y = this.y + Math.sin(this.time) * 4;
+      const revealed = !this.hidden || Math.abs(player.x - this.x) < 150;
+      if (!revealed) return;
+      const x = this.x - camera.x, y = this.y + Math.sin(this.t * 4) * 3;
       c.save();
-      c.fillStyle = "#8ff4ff";
-      c.shadowColor = "#8ff4ff";
-      c.shadowBlur = 14;
-      c.beginPath();
-      c.moveTo(x + 12, y);
-      c.lineTo(x + 24, y + 12);
-      c.lineTo(x + 12, y + 28);
-      c.lineTo(x, y + 12);
-      c.closePath();
-      c.fill();
+      if (this.hidden) c.globalAlpha = .78;
+      if (this.type === "gem") {
+        c.fillStyle = this.hidden ? "#b9f7ff" : "#77e5ff";
+        c.beginPath(); c.moveTo(x + 12, y); c.lineTo(x + 24, y + 11); c.lineTo(x + 12, y + 24); c.lineTo(x, y + 11); c.closePath(); c.fill();
+        c.strokeStyle = "#effcff"; c.stroke();
+      }
       c.restore();
     }
   };

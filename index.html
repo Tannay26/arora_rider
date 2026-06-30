@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Arora Rider original fantasy forest platformer">
-  <title>Arora Rider - Forest Ruins</title>
+  <title>Arora Rider - Platform Adventure</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,8 +15,8 @@
         <h1>Arora Rider</h1>
       </div>
       <div class="level-panel">
-        <strong id="levelName">Level 1 - Forest Ruins</strong>
-        <small>A/D or Arrows to run. Space/W/Up to jump.</small>
+        <strong id="levelName">Level 1 - Forest Ruins Tutorial</strong>
+        <small>A/D or Arrows run. Space/W/Up jump. Shift/E charge. F spark.</small>
       </div>
     </header>
 
@@ -24,6 +24,9 @@
       <div class="stat-pill">HP <strong id="hpText">3 / 3</strong></div>
       <div class="stat-pill">Gems <strong id="gemsText">0 / 0</strong></div>
       <div class="stat-pill">Lives <strong id="livesText">3</strong></div>
+      <div class="stat-pill">Keys <strong id="keysText">0</strong></div>
+      <div class="stat-pill power-pill"><span id="powerIcon">--</span> <strong id="powerText">No power</strong></div>
+      <div class="stat-pill">Shield <strong id="shieldText">0</strong></div>
       <div class="stat-pill">Status <strong id="statusText">Explore</strong></div>
     </section>
 
@@ -38,13 +41,13 @@
       <p class="eyebrow" id="endEyebrow">Level Complete</p>
       <h2 id="endTitle">Victory</h2>
       <p id="endText"></p>
-      <button class="primary-button" id="restartButton">Restart Level</button>
+      <button class="primary-button" id="restartButton">Continue</button>
     </div>
   </section>
 
   <script src="core/config.js"></script>
   <script src="core/utils.js"></script>
-  <script src="levels/level1.js"></script>
+  <script src="levels/levels.js"></script>
   <script src="systems/InputSystem.js"></script>
   <script src="systems/PhysicsSystem.js"></script>
   <script src="entities/Player.js"></script>
