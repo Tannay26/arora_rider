@@ -3,107 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Arora Rider fantasy side-scrolling battle prototype">
-  <title>Arora Rider</title>
+  <meta name="description" content="Arora Rider original fantasy forest platformer">
+  <title>Arora Rider - Forest Ruins</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="game-shell">
-    <section class="top-panel">
+    <header class="top-panel">
       <div>
-        <p class="eyebrow">Fantasy Lane Battle</p>
+        <p class="eyebrow">Platform Adventure</p>
         <h1>Arora Rider</h1>
       </div>
-      <div class="wave-panel">
-        <strong id="waveLabel">Level 1 - Wave 0 / 10</strong>
-        <small id="waveDetail">Enemies remaining: 0</small>
-        <div class="wave-track"><i id="waveProgress"></i></div>
+      <div class="level-panel">
+        <strong id="levelName">Level 1 - Forest Ruins</strong>
+        <small>A/D or Arrows to run. Space/W/Up to jump.</small>
       </div>
-      <button id="startWaveButton" class="primary-button">Start Endless Assault</button>
-    </section>
+    </header>
 
     <section class="hud-row">
-      <div class="stat-pill">Hero HP <strong id="heroHpText">120 / 120</strong></div>
-      <div class="stat-pill">Level <strong id="heroLevelText">1</strong></div>
-      <div class="stat-pill">XP <strong id="heroXpText">0 / 100</strong></div>
-      <div class="stat-pill">Coins <strong id="coinsText">0</strong></div>
-    </section>
-
-    <section class="resource-row">
-      <div class="resource">
-        <span>Energy</span>
-        <div class="bar"><i id="energyBar"></i></div>
-        <strong id="energyText">0 / 100</strong>
-      </div>
-      <div class="resource spirit">
-        <span>Spirit</span>
-        <div class="bar"><i id="spiritBar"></i></div>
-        <strong id="spiritText">0 / 100</strong>
-      </div>
+      <div class="stat-pill">HP <strong id="hpText">3 / 3</strong></div>
+      <div class="stat-pill">Gems <strong id="gemsText">0 / 0</strong></div>
+      <div class="stat-pill">Lives <strong id="livesText">3</strong></div>
+      <div class="stat-pill">Status <strong id="statusText">Explore</strong></div>
     </section>
 
     <section class="canvas-wrap">
       <canvas id="gameCanvas"></canvas>
-      <div class="battle-banner" id="battleBanner" hidden></div>
       <div class="debug-panel" id="debugPanel"></div>
-    </section>
-
-    <section class="ability-bar" id="abilityBar"></section>
-    <section class="card-bar" id="allyCards"></section>
-    <section class="turret-section">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Turrets</p>
-          <h2>Player-side defenses</h2>
-        </div>
-        <small>Placed automatically near the castle. Turrets cost Energy and do not move.</small>
-      </div>
-      <div class="turret-bar" id="turretCards"></div>
-    </section>
-    <section class="troop-upgrades">
-      <div class="upgrade-head">
-        <div>
-          <p class="eyebrow">Permanent Troop Training</p>
-          <h2>Spend Spirit to improve summon types</h2>
-        </div>
-        <small>Upgrades apply to future summons and get more expensive after each purchase.</small>
-      </div>
-      <div class="troop-upgrade-grid" id="troopUpgradePanel"></div>
     </section>
   </main>
 
-  <section class="modal" id="upgradeModal" hidden>
-    <div class="modal-card">
-      <p class="eyebrow">Arora Rider Level Up</p>
-      <h2>Choose an upgrade</h2>
-      <div class="upgrade-grid" id="upgradeChoices"></div>
-    </div>
-  </section>
-
   <section class="modal" id="endModal" hidden>
     <div class="modal-card">
-      <p class="eyebrow" id="endEyebrow">Battle Complete</p>
+      <p class="eyebrow" id="endEyebrow">Level Complete</p>
       <h2 id="endTitle">Victory</h2>
       <p id="endText"></p>
-      <button class="primary-button" id="restartButton">Restart</button>
+      <button class="primary-button" id="restartButton">Restart Level</button>
     </div>
   </section>
 
   <script src="core/config.js"></script>
   <script src="core/utils.js"></script>
-  <script src="effects/FloatingText.js"></script>
-  <script src="effects/ParticleSystem.js"></script>
-  <script src="entities/Base.js"></script>
-  <script src="entities/Hero.js"></script>
-  <script src="entities/Projectile.js"></script>
-  <script src="entities/Unit.js"></script>
-  <script src="entities/Turret.js"></script>
-  <script src="abilities/abilities.js"></script>
-  <script src="waves/level1.js"></script>
+  <script src="levels/level1.js"></script>
   <script src="systems/InputSystem.js"></script>
-  <script src="systems/CollisionSystem.js"></script>
-  <script src="systems/WaveManager.js"></script>
-  <script src="systems/CombatSystem.js"></script>
+  <script src="systems/PhysicsSystem.js"></script>
+  <script src="entities/Player.js"></script>
+  <script src="entities/PlatformEnemy.js"></script>
+  <script src="entities/Collectible.js"></script>
+  <script src="systems/CameraSystem.js"></script>
   <script src="systems/RenderSystem.js"></script>
   <script src="ui/Hud.js"></script>
   <script src="systems/Game.js"></script>

@@ -1,17 +1,11 @@
 :root {
   color-scheme: dark;
   --bg: #10131c;
-  --panel: rgba(24, 28, 42, 0.9);
-  --panel-2: rgba(37, 31, 48, 0.96);
-  --line: rgba(244, 210, 138, 0.28);
+  --panel: rgba(24, 28, 42, 0.92);
+  --line: rgba(244, 210, 138, 0.3);
   --gold: #f0bb59;
-  --gold-2: #ffdc8b;
   --text: #fff4df;
   --muted: #bea986;
-  --red: #ff6f6f;
-  --green: #6ee08f;
-  --blue: #71d4ff;
-  --purple: #c79cff;
 }
 
 * {
@@ -26,29 +20,20 @@ body {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 15% 10%, rgba(240, 187, 89, 0.18), transparent 28%),
-    linear-gradient(135deg, #121620 0%, #23182b 52%, #111721 100%);
+    radial-gradient(circle at 16% 12%, rgba(240, 187, 89, 0.16), transparent 30%),
+    linear-gradient(135deg, #111721 0%, #222034 55%, #0f1816 100%);
   color: var(--text);
   font-family: Georgia, "Times New Roman", serif;
 }
 
-button {
-  font: inherit;
-}
-
 .game-shell {
-  width: min(1260px, calc(100vw - 24px));
+  width: min(1180px, calc(100vw - 24px));
   margin: 0 auto;
   padding: 12px 0 16px;
 }
 
 .top-panel,
-.hud-row,
-.resource-row,
-.ability-bar,
-.card-bar,
-.turret-section,
-.troop-upgrades {
+.hud-row {
   display: grid;
   gap: 10px;
   background: var(--panel);
@@ -58,7 +43,7 @@ button {
 }
 
 .top-panel {
-  grid-template-columns: minmax(180px, 1fr) minmax(240px, 430px) auto;
+  grid-template-columns: 1fr minmax(250px, 420px);
   align-items: center;
   padding: 12px;
   border-radius: 12px 12px 6px 6px;
@@ -66,7 +51,7 @@ button {
 
 .eyebrow {
   margin: 0 0 3px;
-  color: var(--gold-2);
+  color: #ffdc8b;
   font: 700 0.72rem Arial, sans-serif;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -75,7 +60,6 @@ button {
 h1,
 h2 {
   margin: 0;
-  letter-spacing: 0.01em;
 }
 
 h1 {
@@ -83,60 +67,15 @@ h1 {
   line-height: 0.95;
 }
 
-.wave-panel {
-  display: grid;
-  gap: 5px;
-  text-align: center;
+.level-panel {
+  text-align: right;
 }
 
-.wave-panel small {
-  color: var(--muted);
-  font: 700 0.75rem Arial, sans-serif;
-}
-
-.wave-track,
-.bar {
-  height: 12px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-}
-
-.wave-track i,
-.bar i {
+.level-panel small {
   display: block;
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--gold), #fff0a9);
-  border-radius: inherit;
-  transition: width 0.15s ease;
-}
-
-.primary-button,
-.card,
-.ability,
-.upgrade-buy {
-  border: 1px solid rgba(255, 226, 165, 0.42);
-  color: var(--text);
-  background: linear-gradient(180deg, #6e4029, #3e2532);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 18px rgba(0, 0, 0, 0.24);
-  cursor: pointer;
-}
-
-.primary-button {
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 8px;
-  font-weight: 700;
-}
-
-.primary-button:disabled,
-.card:disabled,
-.ability:disabled {
-  cursor: not-allowed;
-  opacity: 0.48;
-  filter: grayscale(0.45);
+  margin-top: 4px;
+  color: var(--muted);
+  font: 700 0.78rem Arial, sans-serif;
 }
 
 .hud-row {
@@ -165,36 +104,11 @@ h1 {
   text-transform: none;
 }
 
-.resource-row {
-  grid-template-columns: 1fr 1fr;
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 6px;
-}
-
-.resource {
-  display: grid;
-  grid-template-columns: 72px 1fr 82px;
-  align-items: center;
-  gap: 8px;
-  font: 700 0.82rem Arial, sans-serif;
-  color: var(--gold-2);
-}
-
-.resource .bar i {
-  background: linear-gradient(90deg, #4bd17d, #c9ff88);
-}
-
-.resource.spirit .bar i {
-  background: linear-gradient(90deg, #7f70ff, #8fe6ff);
-}
-
 .canvas-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 8.2;
-  min-height: 390px;
-  max-height: calc(100vh - 288px);
+  aspect-ratio: 16 / 8.5;
+  min-height: 420px;
   margin-top: 10px;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -209,173 +123,18 @@ canvas {
   height: 100%;
 }
 
-.debug-panel,
-.battle-banner {
-  position: absolute;
-  pointer-events: none;
-}
-
 .debug-panel {
+  position: absolute;
   top: 10px;
   left: 10px;
-  min-width: 210px;
+  min-width: 220px;
   padding: 8px 10px;
-  background: rgba(9, 12, 18, 0.68);
+  background: rgba(9, 12, 18, 0.66);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   color: #dfe9ff;
   font: 0.78rem/1.45 Consolas, "Courier New", monospace;
-}
-
-.debug-panel[hidden] {
-  display: none;
-}
-
-.battle-banner {
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 18px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(20, 15, 22, 0.76);
-  color: var(--gold-2);
-  font-weight: 700;
-  text-align: center;
-}
-
-.ability-bar {
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 6px;
-}
-
-.ability {
-  min-height: 58px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  text-align: left;
-}
-
-.troop-upgrades {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px 8px 12px 12px;
-}
-
-.upgrade-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: end;
-  margin-bottom: 10px;
-}
-
-.upgrade-head h2 {
-  font-size: 1.05rem;
-}
-
-.upgrade-head small {
-  color: var(--muted);
-  max-width: 430px;
-  font: 700 0.75rem Arial, sans-serif;
-}
-
-.troop-upgrade-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-
-.troop-upgrade-card {
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 8px;
-}
-
-.troop-upgrade-card h3 {
-  margin: 0 0 7px;
-  font-size: 0.85rem;
-}
-
-.upgrade-buy {
-  width: 100%;
-  min-height: 28px;
-  margin-top: 4px;
-  padding: 4px 6px;
-  border-radius: 6px;
-  font: 700 0.68rem Arial, sans-serif;
-}
-
-.ability strong,
-.card strong {
-  display: block;
-  font-size: 0.95rem;
-}
-
-.ability span,
-.card span {
-  display: block;
-  margin-top: 3px;
-  color: #ecd5a5;
-  font: 700 0.72rem Arial, sans-serif;
-}
-
-.card-bar,
-.turret-bar {
-  grid-template-columns: repeat(10, minmax(86px, 1fr));
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 6px 6px 12px 12px;
-}
-
-.card {
-  min-height: 92px;
-  padding: 8px;
-  border-radius: 8px;
-  text-align: left;
-}
-
-.turret-section {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.section-head h2 {
-  font-size: 1.05rem;
-}
-
-.section-head small {
-  color: var(--muted);
-  font: 700 0.75rem Arial, sans-serif;
-}
-
-.turret-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-.card small {
-  display: block;
-  margin-top: 5px;
-  color: var(--muted);
-  font: 0.68rem Arial, sans-serif;
+  pointer-events: none;
 }
 
 .modal {
@@ -384,7 +143,7 @@ canvas {
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(4, 6, 10, 0.7);
+  background: rgba(4, 6, 10, 0.72);
   z-index: 10;
 }
 
@@ -393,7 +152,7 @@ canvas {
 }
 
 .modal-card {
-  width: min(720px, 100%);
+  width: min(560px, 100%);
   padding: 22px;
   background: linear-gradient(180deg, rgba(56, 42, 64, 0.98), rgba(22, 18, 31, 0.98));
   border: 1px solid var(--line);
@@ -401,50 +160,28 @@ canvas {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
 }
 
-.upgrade-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 18px;
+.primary-button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 226, 165, 0.42);
+  border-radius: 8px;
+  color: var(--text);
+  background: linear-gradient(180deg, #6e4029, #3e2532);
+  font: 700 1rem Georgia, serif;
+  cursor: pointer;
 }
 
-.upgrade-grid button {
-  min-height: 118px;
-  padding: 14px;
-  border-radius: 10px;
-  text-align: left;
-}
-
-@media (max-width: 900px) {
+@media (max-width: 760px) {
   .top-panel,
-  .hud-row,
-  .resource-row,
-  .ability-bar {
+  .hud-row {
     grid-template-columns: 1fr;
   }
 
-  .card-bar {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .turret-bar {
-    grid-template-columns: 1fr;
-  }
-
-  .troop-upgrade-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .upgrade-head {
-    display: grid;
+  .level-panel {
+    text-align: left;
   }
 
   .canvas-wrap {
     min-height: 330px;
-    max-height: none;
-  }
-
-  .upgrade-grid {
-    grid-template-columns: 1fr;
   }
 }
