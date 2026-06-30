@@ -3,58 +3,69 @@
   AR.WaveManager = class {
     constructor(game) {
       this.game = game;
-      this.wave = 0;
-      this.maxWaves = 10;
-      this.queue = [];
+      this.wave = 1;
+      this.maxWaves = Infinity;
       this.active = false;
-      this.countdown = 0;
+      this.spawnInterval = 25;
+      this.spawnTimer = 0;
       this.spawned = 0;
       this.total = 0;
-      this.nextWaveTimer = 0;
-      this.bossWarning = false;
       this.lastSpawnIn = 0;
+      this.scaleTier = 0;
+      this.nextWaveTimer = 0;
+      this.countdown = 0;
+      this.queue = [];
     }
-    get remaining() { return this.queue.length + this.game.enemies.length; }
+    get remaining() { return this.game.enemies.length; }
     start() {
-      if (this.active || this.nextWaveTimer > 0 || this.wave >= this.maxWaves || this.game.ended) return;
-      this.wave += 1;
-      this.countdown = this.wave === 10 ? 4 : 2.5;
-      this.queue = AR.makeLevelOneWave(this.wave, this.game);
-      this.total = this.queue.length;
-      this.spawned = 0;
+      if (this.active || this.game.ended) return;
       this.active = true;
-      this.bossWarning = this.wave === 10;
-      this.game.banner(this.bossWarning ? "Boss warning: Elder Warbeast approaches!" : `Wave ${this.wave} forming...`);
+      this.spawnTimer = 1;
+      this.game.banner("Endless assault started. Enemies spawn every 25 seconds.");
+      console.log("[Arora Rider] Endless enemy spawner started");
     }
     update(dt) {
       if (!this.active) {
-        this.nextWaveTimer = Math.max(0, this.nextWaveTimer - dt);
+        this.lastSpawnIn = 0;
         return;
       }
-      if (this.countdown > 0) {
-        this.countdown -= dt;
-        return;
+      this.spawnTimer -= dt;
+      this.scaleTier = Math.floor(this.game.timeSurvived / 60);
+      if (this.spawnTimer <= 0) {
+        this.spawnEnemyPack();
+        this.spawnTimer += this.spawnInterval;
       }
-      this.queue.forEach((event) => event.time -= dt);
-      this.lastSpawnIn = this.queue.length ? Math.max(0, Math.min(...this.queue.map((event) => event.time))) : 0;
-      const ready = this.queue.filter((event) => event.time <= 0);
-      this.queue = this.queue.filter((event) => event.time > 0);
-      ready.forEach((event) => {
-        this.game.enemies.push(new AR.Unit(event.stats, "enemy", AR.WORLD.enemyStructureX - 70));
-        this.spawned += 1;
-      });
-      if (!this.queue.length && !this.game.enemies.length) {
-        this.active = false;
-        this.game.hero.addXp(34 + this.wave * 14, this.game);
-        this.game.coins += 16 + this.wave * 5;
-        if (this.wave < this.maxWaves) {
-          this.game.allies.forEach((unit) => unit.addXp(18 + this.wave * 3, this.game));
-          this.nextWaveTimer = 12;
-          this.game.banner(`Wave ${this.wave} cleared. Next wave ready soon.`);
-        } else {
-          this.game.banner("All waves cleared. Bring down the fortress.");
-        }
+      this.lastSpawnIn = Math.max(0, this.spawnTimer);
+    }
+    spawnEnemyPack() {
+      const packSize = 1 + Math.min(4, Math.floor(this.scaleTier / 2));
+      for (let i = 0; i < packSize; i++) {
+        const blueprint = AR.ALLY_BLUEPRINTS[(this.spawned + i) % AR.ALLY_BLUEPRINTS.length];
+        const stats = this.enemyFromAlly(blueprint);
+        const x = AR.WORLD.enemyStructureX - 80 - i * 28;
+        const enemy = new AR.Unit(stats, "enemy", x);
+        this.game.enemies.push(enemy);
+        console.log(`[Arora Rider] Enemy spawned: ${enemy.name} | alive=${this.game.enemies.length}`);
       }
+      this.spawned += packSize;
+      this.total = this.spawned;
+      this.wave = this.scaleTier + 1;
+    }
+    enemyFromAlly(ally) {
+      const scale = 0.78 + this.scaleTier * 0.18 + this.game.hero.level * 0.04;
+      return {
+        ...ally,
+        id: `red-${ally.id}`,
+        name: `Red ${ally.name}`,
+        hp: Math.round(ally.hp * scale),
+        damage: Math.round(ally.damage * (0.75 + this.scaleTier * 0.14)),
+        speed: ally.speed * (0.88 + Math.min(0.35, this.scaleTier * 0.035)),
+        attackSpeed: ally.attackSpeed * (0.86 + Math.min(0.4, this.scaleTier * 0.04)),
+        role: ally.role,
+        enemyTint: true,
+        xpReward: 12 + this.scaleTier * 4,
+        coinReward: 2 + Math.floor(this.scaleTier / 2),
+      };
     }
   };
 })();

@@ -19,7 +19,7 @@
         <small id="waveDetail">Enemies remaining: 0</small>
         <div class="wave-track"><i id="waveProgress"></i></div>
       </div>
-      <button id="startWaveButton" class="primary-button">Start Wave 1</button>
+      <button id="startWaveButton" class="primary-button">Start Endless Assault</button>
     </section>
 
     <section class="hud-row">
@@ -50,6 +50,16 @@
 
     <section class="ability-bar" id="abilityBar"></section>
     <section class="card-bar" id="allyCards"></section>
+    <section class="turret-section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Turrets</p>
+          <h2>Player-side defenses</h2>
+        </div>
+        <small>Placed automatically near the castle. Turrets cost Energy and do not move.</small>
+      </div>
+      <div class="turret-bar" id="turretCards"></div>
+    </section>
     <section class="troop-upgrades">
       <div class="upgrade-head">
         <div>
@@ -87,6 +97,7 @@
   <script src="entities/Hero.js"></script>
   <script src="entities/Projectile.js"></script>
   <script src="entities/Unit.js"></script>
+  <script src="entities/Turret.js"></script>
   <script src="abilities/abilities.js"></script>
   <script src="waves/level1.js"></script>
   <script src="systems/InputSystem.js"></script>

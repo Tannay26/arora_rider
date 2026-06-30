@@ -8,7 +8,8 @@
         if (forward) return forward;
         return !this.game.enemyBase.dead ? this.game.enemyBase : null;
       }
-      const directAlly = this.game.allies.filter((a) => !a.dead && a.centerX <= unit.centerX + 24).sort((a, b) => b.centerX - a.centerX)[0];
+      const blockers = [...this.game.allies, ...this.game.turrets].filter((a) => !a.dead && a.centerX <= unit.centerX + 24);
+      const directAlly = blockers.sort((a, b) => b.centerX - a.centerX)[0];
       if (directAlly) return directAlly;
       if (AR.distance(unit, this.game.hero) < 240) return this.game.hero;
       return this.game.playerBase;
@@ -26,6 +27,7 @@
       if (type === "slow") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#8be8ff", 6, 45);
       if (type === "poison") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#85e06b", 6, 55);
       if (type === "chain" || type === "bolt") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#fff176", 8, 70);
+      if (type === "splash") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#fff0a8", 8, 70);
       if (source && source.addXp) source.addXp(dealt * .14, this.game);
       if (target.hp <= 0 && !target.dead) target.dead = true;
       if (target.dead && target.side === "enemy" && !target.isBase) {

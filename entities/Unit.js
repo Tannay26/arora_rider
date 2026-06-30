@@ -71,6 +71,17 @@
       c.translate(this.centerX, 0); c.scale(dir, 1); c.translate(-this.w / 2, 0);
       drawSilhouette(c, this, 0, this.y - this.h);
       c.restore();
+      if (this.side === "enemy" && this.stats.enemyTint && !this.dead) {
+        c.save();
+        c.strokeStyle = "rgba(255, 48, 48, .85)";
+        c.shadowColor = "#ff3030";
+        c.shadowBlur = 12;
+        c.lineWidth = 3;
+        c.beginPath();
+        c.ellipse(this.centerX, this.y - this.h * .5, this.w * .58, this.h * .55, 0, 0, Math.PI * 2);
+        c.stroke();
+        c.restore();
+      }
       if (!this.dead) AR.drawHp(c, this.x, this.y - this.h - 13, this.w, 6, this.hp / this.maxHp);
     }
   };
@@ -81,23 +92,31 @@
     const s = u.w / 48, t = performance.now() / 180, walk = u.state === "walk" ? Math.sin(t) * 4 : 0, attack = u.state === "attack" ? Math.sin(t * 2) * 6 : 0;
     const fill = { ally: "#d8b46c", enemy: "#6a5267" }[u.side];
     c.fillStyle = fill;
-    if (u.role === "duelist") return bladePup(c, x, y, s, walk, attack);
-    if (u.role === "archer") return thornHare(c, x, y, s, attack);
-    if (u.role === "guardian") return shellback(c, x, y, s, walk);
-    if (u.role === "skirmisher") return emberFox(c, x, y, s, walk);
-    if (u.role === "breaker") return ironRam(c, x, y, s, attack);
-    if (u.role === "control") return frostOwl(c, x, y, s, t);
-    if (u.role === "arc") return sparkLynx(c, x, y, s, attack);
-    if (u.role === "fortress") return stoneback(c, x, y, s);
-    if (u.role === "lancer") return windCrane(c, x, y, s, attack);
-    if (u.role === "champion") return sunLion(c, x, y, s, attack);
-    if (u.role === "wolfRaider") return wolfRaider(c, x, y, s, walk, attack);
-    if (u.role === "boarBrute") return boarBrute(c, x, y, s, walk);
-    if (u.role === "crowShaman") return crowShaman(c, x, y, s, attack);
-    if (u.role === "serpentSpitter") return serpentSpitter(c, x, y, s, attack);
-    if (u.role === "rhinoBreaker") return rhinoBreaker(c, x, y, s, attack);
-    if (u.role === "elderWarbeast") return elderWarbeast(c, x, y, s, attack);
+    const tinted = u.side === "enemy" && u.stats.enemyTint;
+    const done = () => { if (tinted) c.restore(); };
+    if (tinted) {
+      c.save();
+      c.globalAlpha = .98;
+      c.filter = "sepia(.35) saturate(1.8) hue-rotate(315deg) brightness(.78)";
+    }
+    if (u.role === "duelist") { bladePup(c, x, y, s, walk, attack); return done(); }
+    if (u.role === "archer") { thornHare(c, x, y, s, attack); return done(); }
+    if (u.role === "guardian") { shellback(c, x, y, s, walk); return done(); }
+    if (u.role === "skirmisher") { emberFox(c, x, y, s, walk); return done(); }
+    if (u.role === "breaker") { ironRam(c, x, y, s, attack); return done(); }
+    if (u.role === "control") { frostOwl(c, x, y, s, t); return done(); }
+    if (u.role === "arc") { sparkLynx(c, x, y, s, attack); return done(); }
+    if (u.role === "fortress") { stoneback(c, x, y, s); return done(); }
+    if (u.role === "lancer") { windCrane(c, x, y, s, attack); return done(); }
+    if (u.role === "champion") { sunLion(c, x, y, s, attack); return done(); }
+    if (u.role === "wolfRaider") { wolfRaider(c, x, y, s, walk, attack); return done(); }
+    if (u.role === "boarBrute") { boarBrute(c, x, y, s, walk); return done(); }
+    if (u.role === "crowShaman") { crowShaman(c, x, y, s, attack); return done(); }
+    if (u.role === "serpentSpitter") { serpentSpitter(c, x, y, s, attack); return done(); }
+    if (u.role === "rhinoBreaker") { rhinoBreaker(c, x, y, s, attack); return done(); }
+    if (u.role === "elderWarbeast") { elderWarbeast(c, x, y, s, attack); return done(); }
     enemyShape(c, x, y, s, u);
+    done();
   }
   function bladePup(c, x, y, s, walk, atk) { c.fillStyle = "#b77f50"; c.beginPath(); c.ellipse(x+24*s,y+38*s+walk,24*s,12*s,0,0,Math.PI*2); c.fill(); c.beginPath(); c.arc(x+47*s,y+29*s,12*s,0,Math.PI*2); c.fill(); c.fillStyle="#6b412e"; c.beginPath(); c.moveTo(x+42*s,y+18*s); c.lineTo(x+47*s,y+4*s); c.lineTo(x+52*s,y+18*s); c.fill(); c.beginPath(); c.moveTo(x+51*s,y+18*s); c.lineTo(x+61*s,y+8*s); c.lineTo(x+59*s,y+24*s); c.fill(); c.strokeStyle="#5d392a"; c.lineWidth=5*s; c.beginPath(); c.moveTo(x+3*s,y+35*s); c.quadraticCurveTo(x-10*s,y+18*s,x+8*s,y+18*s); c.stroke(); legs(c,x+12*s,y+47*s,s,walk,4); c.strokeStyle="#e9edf4"; c.lineWidth=3*s; c.beginPath(); c.moveTo(x+38*s,y+36*s); c.lineTo(x+59*s+atk,y+30*s); c.moveTo(x+42*s,y+40*s); c.lineTo(x+63*s+atk,y+44*s); c.stroke(); }
   function thornHare(c, x, y, s, atk) { c.fillStyle="#b8d990"; c.beginPath(); c.ellipse(x+26*s,y+38*s,18*s,27*s,0,0,Math.PI*2); c.fill(); c.beginPath(); c.arc(x+28*s,y+15*s,12*s,0,Math.PI*2); c.fill(); c.fillRect(x+19*s,y-20*s,7*s,31*s); c.fillRect(x+31*s,y-18*s,7*s,31*s); c.fillStyle="#f0c7d8"; c.fillRect(x+21*s,y-16*s,3*s,25*s); c.fillRect(x+33*s,y-14*s,3*s,24*s); c.strokeStyle="#5a3a2f"; c.lineWidth=3*s; c.beginPath(); c.arc(x+45*s,y+32*s,22*s,-1.2,1.25); c.stroke(); c.strokeStyle="#e7d186"; c.beginPath(); c.moveTo(x+38*s,y+33*s); c.lineTo(x+78*s+atk,y+28*s); c.stroke(); c.fillStyle="#6f4a35"; c.fillRect(x+8*s,y+38*s,7*s,25*s); }

@@ -14,13 +14,19 @@
         this.x += Math.sign(dx || 1) * this.speed * dt;
         if (Math.abs(dx) < this.speed * dt + 18) {
           game.combat.damage(this.target, this.damage, this.owner, this.type);
+          if (this.type === "splash") {
+            game.enemies.filter((e) => !e.dead && Math.abs(e.centerX - this.target.centerX) < 115).forEach((e) => {
+              if (e !== this.target) game.combat.damage(e, this.damage * .55, this.owner, "splash");
+            });
+            game.particles.burst(this.target.centerX, this.target.y - this.target.h * .5, "#fff0a8", 14, 110);
+          }
           if (this.type === "chain") game.combat.chain(this.target, this.damage * .45, this.owner);
           this.dead = true;
         }
       } else {
         this.x += this.speed * dt * (this.side === "ally" ? 1 : -1);
       }
-      if (["burn", "slow", "chain", "bolt"].includes(this.type)) game.particles.trail(this.x, this.y, this.color, 1);
+      if (["burn", "slow", "chain", "bolt", "splash", "sentry"].includes(this.type)) game.particles.trail(this.x, this.y, this.color, 1);
       if (this.x < -120 || this.x > AR.WORLD.width + 120) this.dead = true;
     }
     draw(c) {

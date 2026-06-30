@@ -10,6 +10,7 @@
       this.enemyBase = new AR.Base("enemy");
       this.allies = [];
       this.enemies = [];
+      this.turrets = [];
       this.projectiles = [];
       this.floaters = [];
       this.particles = new AR.ParticleSystem();
@@ -34,6 +35,7 @@
       document.getElementById("startWaveButton").addEventListener("click", () => this.waves.start());
       document.getElementById("restartButton").addEventListener("click", () => location.reload());
       document.getElementById("allyCards").addEventListener("click", (e) => { const card = e.target.closest("[data-ally]"); if (card) this.summon(Number(card.dataset.ally)); });
+      document.getElementById("turretCards").addEventListener("click", (e) => { const card = e.target.closest("[data-turret]"); if (card) this.placeTurret(Number(card.dataset.turret)); });
       document.getElementById("abilityBar").addEventListener("click", (e) => { const ability = e.target.closest("[data-ability]"); if (ability) AR.castAbility(this, ability.dataset.ability); });
       document.getElementById("troopUpgradePanel").addEventListener("click", (e) => { const button = e.target.closest("[data-train]"); if (button) this.buyTroopUpgrade(button.dataset.ally, button.dataset.train); });
     }
@@ -57,7 +59,7 @@
       Object.keys(this.abilityCooldowns).forEach((id) => this.abilityCooldowns[id] = Math.max(0, this.abilityCooldowns[id] - dt));
       this.hero.update(dt, this.input);
       this.waves.update(dt);
-      [...this.allies, ...this.enemies].forEach((unit) => unit.update(dt, this));
+      [...this.allies, ...this.enemies, ...this.turrets].forEach((unit) => unit.update(dt, this));
       this.collision.separate();
       this.projectiles.forEach((p) => p.update(dt, this));
       this.particles.update(dt);
@@ -78,6 +80,15 @@
       stats.speed *= Math.pow(1.08, training.speed);
       stats.range *= Math.pow(1.08, training.range);
       this.allies.push(new AR.Unit(stats, "ally", this.playerBase.right + 24 + Math.random() * 24));
+    }
+    placeTurret(index) {
+      const base = AR.TURRETS[index];
+      if (!base || this.energy < base.cost || this.ended) return;
+      const slot = this.turrets.length % 6;
+      const x = Math.min(AR.WORLD.width / 2 - 130, this.playerBase.right + 80 + slot * 92);
+      this.energy -= base.cost;
+      this.turrets.push(new AR.Turret(base, x));
+      this.banner(`${base.name} placed.`);
     }
     troopUpgradeCost(allyId, stat) {
       return Math.round(35 * Math.pow(1.38, this.training[allyId][stat]));
@@ -102,12 +113,13 @@
     cleanup() {
       this.allies = this.allies.filter((u) => !u.removed);
       this.enemies = this.enemies.filter((u) => !u.removed);
+      this.turrets = this.turrets.filter((u) => !u.removed);
       this.projectiles = this.projectiles.filter((p) => !p.dead);
       this.floaters = this.floaters.filter((f) => f.life > 0);
     }
     checkEnd() {
       if (this.hero.dead) this.end(false);
-      if (this.enemyBase.dead && this.waves.wave >= this.waves.maxWaves && !this.waves.active) this.end(true);
+      if (this.enemyBase.dead) this.end(true);
     }
     showUpgrades() {
       this.paused = true;

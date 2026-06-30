@@ -57,4 +57,11 @@
     { key: "speed", label: "MOVE", multiplier: 1.08 },
     { key: "range", label: "RNG", multiplier: 1.08, rangedOnly: true },
   ];
+
+  AR.TURRETS = [
+    { id: "sentryGun", name: "Sentry Gun", cost: 45, hp: 170, damage: 18, range: 360, attackSpeed: 1.55, type: "sentry" },
+    { id: "eggSpitter", name: "Egg Spitter", cost: 60, hp: 145, damage: 38, range: 320, attackSpeed: 0.42, type: "splash" },
+    { id: "flameThrower", name: "Flame Thrower", cost: 70, hp: 190, damage: 9, range: 185, attackSpeed: 3.2, type: "flame" },
+    { id: "swordDash", name: "One-Shot Sword Dash", cost: 85, hp: 80, damage: 210, range: 620, attackSpeed: 1, type: "dash" },
+  ];
 })();
