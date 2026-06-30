@@ -11,6 +11,7 @@
       this.allies = [];
       this.enemies = [];
       this.turrets = [];
+      this.entities = [];
       this.projectiles = [];
       this.floaters = [];
       this.particles = new AR.ParticleSystem();
@@ -28,7 +29,8 @@
       this.bindUi();
       this.resize();
       window.addEventListener("resize", () => this.resize());
-      this.banner("Defend the castle. Clear 10 waves, then destroy the corrupted fortress.");
+      this.refreshEntities();
+      this.banner("Enemy spawn test running. 50 red enemies will spawn from the fortress side.");
       requestAnimationFrame((time) => this.loop(time));
     }
     bindUi() {
@@ -59,14 +61,19 @@
       Object.keys(this.abilityCooldowns).forEach((id) => this.abilityCooldowns[id] = Math.max(0, this.abilityCooldowns[id] - dt));
       this.hero.update(dt, this.input);
       this.waves.update(dt);
-      [...this.allies, ...this.enemies, ...this.turrets].forEach((unit) => unit.update(dt, this));
+      this.refreshEntities();
+      this.entities.forEach((unit) => unit.update(dt, this));
       this.collision.separate();
       this.projectiles.forEach((p) => p.update(dt, this));
       this.particles.update(dt);
       this.floaters.forEach((f) => f.update(dt));
       this.playerBase.update(dt); this.enemyBase.update(dt);
       this.cleanup();
+      this.refreshEntities();
       this.checkEnd();
+    }
+    refreshEntities() {
+      this.entities = [...this.allies, ...this.enemies, ...this.turrets];
     }
     summon(index) {
       const base = AR.ALLY_BLUEPRINTS[index], cost = Math.ceil(base.cost * this.mods.cost);

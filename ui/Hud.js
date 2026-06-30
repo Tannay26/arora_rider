@@ -32,12 +32,12 @@
     }
     update() {
       const g = this.game, w = g.waves;
-      this.nodes.waveLabel.textContent = `Endless Assault - Threat Tier ${w.scaleTier + 1}`;
-      this.nodes.waveDetail.textContent = `Enemies alive: ${w.remaining} | next spawn ${w.lastSpawnIn.toFixed(1)}s | spawned ${w.spawned}`;
-      this.nodes.waveProgress.style.width = `${w.active ? (1 - w.lastSpawnIn / w.spawnInterval) * 100 : 0}%`;
+      this.nodes.waveLabel.textContent = "Enemy Spawn Test";
+      this.nodes.waveDetail.textContent = `Enemies spawned: ${w.spawned} / ${w.total} | Enemies alive: ${w.remaining} | Next: ${w.nextTypeName} | Spawn in ${w.lastSpawnIn.toFixed(1)}s`;
+      this.nodes.waveProgress.style.width = `${w.total ? (w.spawned / w.total) * 100 : 0}%`;
       this.nodes.startWaveButton.hidden = false;
-      this.nodes.startWaveButton.disabled = w.active || g.ended;
-      this.nodes.startWaveButton.textContent = w.active ? "Endless Assault Active" : "Start Endless Assault";
+      this.nodes.startWaveButton.disabled = true;
+      this.nodes.startWaveButton.textContent = w.spawned >= w.total ? "Spawn Test Complete" : "Spawn Test Running";
       this.nodes.heroHpText.textContent = `${Math.max(0, Math.round(g.hero.hp))} / ${Math.round(g.hero.maxHp)}`;
       this.nodes.heroLevelText.textContent = g.hero.level;
       this.nodes.heroXpText.textContent = `${Math.round(g.hero.xp)} / ${g.hero.xpNeed}`;
@@ -62,7 +62,7 @@
         button.disabled = g.spirit < ability.cost || cd > 0 || g.ended;
         button.querySelector("span").textContent = cd > 0 ? `${cd.toFixed(1)}s cooldown` : `${ability.cost} Spirit`;
       });
-      this.nodes.debugPanel.innerHTML = `FPS: ${Math.round(g.fps)}<br>Hero X: ${Math.round(g.hero.x)}<br>Allies: ${g.allies.length}<br>Turrets: ${g.turrets.length}<br>Enemies alive: ${g.enemies.length}<br>Enemy Base: ${Math.max(0, Math.round(g.enemyBase.hp))}`;
+      this.nodes.debugPanel.innerHTML = `FPS: ${Math.round(g.fps)}<br>Hero X: ${Math.round(g.hero.x)}<br>Enemies spawned: ${w.spawned} / ${w.total}<br>Enemies alive: ${g.enemies.length}<br>Next enemy type: ${w.nextTypeName}<br>Sequence: ${w.sequence.join(", ")}`;
       this.updateTrainingButtons();
     }
     updateTrainingButtons() {

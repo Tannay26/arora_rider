@@ -7,7 +7,7 @@
       drawBackground(c);
       this.game.playerBase.draw(c);
       this.game.enemyBase.draw(c);
-      [...this.game.turrets, ...this.game.allies, ...this.game.enemies].sort((a, b) => a.x - b.x).forEach((u) => u.draw(c));
+      this.game.entities.sort((a, b) => a.x - b.x).forEach((u) => u.draw(c));
       this.game.hero.draw(c);
       this.game.projectiles.forEach((p) => p.draw(c));
       this.game.particles.draw(c);

@@ -1,70 +1,78 @@
 (() => {
   "use strict";
+
   AR.WaveManager = class {
     constructor(game) {
       this.game = game;
-      this.wave = 1;
-      this.maxWaves = Infinity;
-      this.active = false;
-      this.spawnInterval = 25;
-      this.spawnTimer = 0;
+      this.sequence = Array.from({ length: 50 }, () => Math.floor(Math.random() * 10) + 1);
+      this.spawnInterval = 2;
+      this.spawnTimer = this.spawnInterval;
       this.spawned = 0;
-      this.total = 0;
-      this.lastSpawnIn = 0;
-      this.scaleTier = 0;
-      this.nextWaveTimer = 0;
-      this.countdown = 0;
-      this.queue = [];
-    }
-    get remaining() { return this.game.enemies.length; }
-    start() {
-      if (this.active || this.game.ended) return;
+      this.total = this.sequence.length;
       this.active = true;
-      this.spawnTimer = 1;
-      this.game.banner("Endless assault started. Enemies spawn every 25 seconds.");
-      console.log("[Arora Rider] Endless enemy spawner started");
+      this.lastSpawnIn = this.spawnTimer;
+      this.wave = 1;
+      this.maxWaves = 1;
+      this.scaleTier = 0;
+      this.queue = [];
+      this.countdown = 0;
+      this.nextWaveTimer = 0;
+      console.log("[Arora Rider] Enemy test sequence", this.sequence.join(", "));
     }
+
+    get remaining() {
+      return this.game.enemies.length;
+    }
+
+    get nextNumber() {
+      return this.sequence[this.spawned] || null;
+    }
+
+    get nextTypeName() {
+      return this.nextNumber ? AR.ALLY_BLUEPRINTS[this.nextNumber - 1].name : "Complete";
+    }
+
+    start() {
+      this.active = true;
+      this.game.banner("50-enemy spawn test is running.");
+    }
+
     update(dt) {
-      if (!this.active) {
+      if (!this.active || this.spawned >= this.total) {
         this.lastSpawnIn = 0;
         return;
       }
       this.spawnTimer -= dt;
-      this.scaleTier = Math.floor(this.game.timeSurvived / 60);
-      if (this.spawnTimer <= 0) {
-        this.spawnEnemyPack();
-        this.spawnTimer += this.spawnInterval;
-      }
       this.lastSpawnIn = Math.max(0, this.spawnTimer);
-    }
-    spawnEnemyPack() {
-      const packSize = 1 + Math.min(4, Math.floor(this.scaleTier / 2));
-      for (let i = 0; i < packSize; i++) {
-        const blueprint = AR.ALLY_BLUEPRINTS[(this.spawned + i) % AR.ALLY_BLUEPRINTS.length];
-        const stats = this.enemyFromAlly(blueprint);
-        const x = AR.WORLD.enemyStructureX - 80 - i * 28;
-        const enemy = new AR.Unit(stats, "enemy", x);
-        this.game.enemies.push(enemy);
-        console.log(`[Arora Rider] Enemy spawned: ${enemy.name} | alive=${this.game.enemies.length}`);
+      if (this.spawnTimer <= 0) {
+        this.spawnNext();
+        this.spawnTimer += this.spawnInterval;
+        this.lastSpawnIn = this.spawnTimer;
       }
-      this.spawned += packSize;
-      this.total = this.spawned;
-      this.wave = this.scaleTier + 1;
     }
+
+    spawnNext() {
+      const number = this.sequence[this.spawned];
+      const blueprint = AR.ALLY_BLUEPRINTS[number - 1];
+      const enemy = new AR.Unit(this.enemyFromAlly(blueprint), "enemy", AR.WORLD.enemyStructureX - 95);
+      enemy.y = AR.WORLD.groundY;
+      this.game.enemies.push(enemy);
+      this.spawned += 1;
+      console.log("Spawned enemy", enemy.name, enemy);
+    }
+
     enemyFromAlly(ally) {
-      const scale = 0.78 + this.scaleTier * 0.18 + this.game.hero.level * 0.04;
       return {
         ...ally,
         id: `red-${ally.id}`,
         name: `Red ${ally.name}`,
-        hp: Math.round(ally.hp * scale),
-        damage: Math.round(ally.damage * (0.75 + this.scaleTier * 0.14)),
-        speed: ally.speed * (0.88 + Math.min(0.35, this.scaleTier * 0.035)),
-        attackSpeed: ally.attackSpeed * (0.86 + Math.min(0.4, this.scaleTier * 0.04)),
+        hp: Math.round(ally.hp * 1.05),
+        damage: Math.round(ally.damage * 0.8),
+        speed: ally.speed * 0.9,
         role: ally.role,
         enemyTint: true,
-        xpReward: 12 + this.scaleTier * 4,
-        coinReward: 2 + Math.floor(this.scaleTier / 2),
+        xpReward: 12,
+        coinReward: 2,
       };
     }
   };

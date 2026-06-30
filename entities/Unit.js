@@ -82,9 +82,21 @@
         c.stroke();
         c.restore();
       }
-      if (!this.dead) AR.drawHp(c, this.x, this.y - this.h - 13, this.w, 6, this.hp / this.maxHp);
+      if (!this.dead) {
+        if (this.side === "enemy") drawEnemyHp(c, this.x, this.y - this.h - 13, this.w, 6, this.hp / this.maxHp);
+        else AR.drawHp(c, this.x, this.y - this.h - 13, this.w, 6, this.hp / this.maxHp);
+      }
     }
   };
+  function drawEnemyHp(c, x, y, w, h, ratio) {
+    c.fillStyle = "rgba(32, 4, 7, .95)";
+    c.fillRect(x, y, w, h);
+    c.fillStyle = "#d7192f";
+    c.fillRect(x, y, w * AR.clamp(ratio, 0, 1), h);
+    c.strokeStyle = "rgba(255, 160, 160, .8)";
+    c.lineWidth = 2;
+    c.strokeRect(x, y, w, h);
+  }
   function projectileColor(type) {
     return { burn: "#ff7b31", slow: "#83e6ff", chain: "#fff065", longshot: "#e9fbff", bolt: "#9cf4ff", poison: "#85e06b" }[type] || "#f5d27a";
   }
