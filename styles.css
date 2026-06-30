@@ -83,8 +83,13 @@ h1 {
 
 .wave-panel {
   display: grid;
-  gap: 7px;
+  gap: 5px;
   text-align: center;
+}
+
+.wave-panel small {
+  color: var(--muted);
+  font: 700 0.75rem Arial, sans-serif;
 }
 
 .wave-track,
@@ -217,6 +222,10 @@ canvas {
   border-radius: 8px;
   color: #dfe9ff;
   font: 0.78rem/1.45 Consolas, "Courier New", monospace;
+}
+
+.debug-panel[hidden] {
+  display: none;
 }
 
 .battle-banner {

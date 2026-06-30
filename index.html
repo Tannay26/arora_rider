@@ -16,6 +16,7 @@
       </div>
       <div class="wave-panel">
         <strong id="waveLabel">Level 1 - Wave 0 / 10</strong>
+        <small id="waveDetail">Enemies remaining: 0</small>
         <div class="wave-track"><i id="waveProgress"></i></div>
       </div>
       <button id="startWaveButton" class="primary-button">Start Wave 1</button>
@@ -68,6 +69,23 @@
     </div>
   </section>
 
+  <script src="core/config.js"></script>
+  <script src="core/utils.js"></script>
+  <script src="effects/FloatingText.js"></script>
+  <script src="effects/ParticleSystem.js"></script>
+  <script src="entities/Base.js"></script>
+  <script src="entities/Hero.js"></script>
+  <script src="entities/Projectile.js"></script>
+  <script src="entities/Unit.js"></script>
+  <script src="abilities/abilities.js"></script>
+  <script src="waves/level1.js"></script>
+  <script src="systems/InputSystem.js"></script>
+  <script src="systems/CollisionSystem.js"></script>
+  <script src="systems/WaveManager.js"></script>
+  <script src="systems/CombatSystem.js"></script>
+  <script src="systems/RenderSystem.js"></script>
+  <script src="ui/Hud.js"></script>
+  <script src="systems/Game.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
