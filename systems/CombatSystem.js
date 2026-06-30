@@ -24,6 +24,7 @@
       if (show) this.game.float(`${crit ? "CRIT " : ""}${Math.round(dealt)}`, target.centerX, target.y - (target.h || 130) - 10, crit ? AR.COLORS.crit : AR.COLORS.damage, crit ? 26 : 20);
       if (type === "burn") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#ff7b31", 6, 55);
       if (type === "slow") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#8be8ff", 6, 45);
+      if (type === "poison") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#85e06b", 6, 55);
       if (type === "chain" || type === "bolt") this.game.particles.burst(target.centerX, target.y - (target.h || 60) * .6, "#fff176", 8, 70);
       if (source && source.addXp) source.addXp(dealt * .14, this.game);
       if (target.hp <= 0 && !target.dead) target.dead = true;

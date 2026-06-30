@@ -17,7 +17,7 @@
     }
     damage(amount) { this.hp -= amount; this.hitFlash = .14; }
     addXp(amount, game) {
-      this.xp += amount;
+      this.xp += amount * game.mods.xpGain;
       while (this.xp >= this.xpNeed) {
         this.xp -= this.xpNeed;
         this.level += 1;

@@ -7,7 +7,7 @@
       this.y = AR.WORLD.groundY;
       this.w = side === "ally" ? 188 : 172;
       this.h = side === "ally" ? 272 : 292;
-      this.maxHp = side === "ally" ? 2400 : 3800;
+      this.maxHp = side === "ally" ? 2400 : 5000;
       this.hp = this.maxHp;
       this.dead = false;
       this.isBase = true;
