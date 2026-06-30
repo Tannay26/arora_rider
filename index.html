@@ -3,25 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Arora Rider Phase 1 browser game prototype">
+  <meta name="description" content="Arora Rider fantasy side-scrolling battle prototype">
   <title>Arora Rider</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="game-shell">
-    <header class="game-header">
+    <section class="top-panel">
       <div>
-        <p class="eyebrow">Phase 1 Prototype</p>
+        <p class="eyebrow">Fantasy Lane Battle</p>
         <h1>Arora Rider</h1>
       </div>
-      <p class="controls">Move: A / D or Arrow Keys</p>
-    </header>
-
-    <section class="canvas-wrap" aria-label="Arora Rider game canvas">
-      <canvas id="gameCanvas"></canvas>
-      <div class="debug-panel" id="debugPanel" aria-live="polite"></div>
+      <div class="wave-panel">
+        <strong id="waveLabel">Level 1 - Wave 0 / 10</strong>
+        <div class="wave-track"><i id="waveProgress"></i></div>
+      </div>
+      <button id="startWaveButton" class="primary-button">Start Wave 1</button>
     </section>
+
+    <section class="hud-row">
+      <div class="stat-pill">Hero HP <strong id="heroHpText">120 / 120</strong></div>
+      <div class="stat-pill">Level <strong id="heroLevelText">1</strong></div>
+      <div class="stat-pill">XP <strong id="heroXpText">0 / 100</strong></div>
+      <div class="stat-pill">Coins <strong id="coinsText">0</strong></div>
+    </section>
+
+    <section class="resource-row">
+      <div class="resource">
+        <span>Energy</span>
+        <div class="bar"><i id="energyBar"></i></div>
+        <strong id="energyText">0 / 100</strong>
+      </div>
+      <div class="resource spirit">
+        <span>Spirit</span>
+        <div class="bar"><i id="spiritBar"></i></div>
+        <strong id="spiritText">0 / 100</strong>
+      </div>
+    </section>
+
+    <section class="canvas-wrap">
+      <canvas id="gameCanvas"></canvas>
+      <div class="battle-banner" id="battleBanner" hidden></div>
+      <div class="debug-panel" id="debugPanel"></div>
+    </section>
+
+    <section class="ability-bar" id="abilityBar"></section>
+    <section class="card-bar" id="allyCards"></section>
   </main>
+
+  <section class="modal" id="upgradeModal" hidden>
+    <div class="modal-card">
+      <p class="eyebrow">Arora Rider Level Up</p>
+      <h2>Choose an upgrade</h2>
+      <div class="upgrade-grid" id="upgradeChoices"></div>
+    </div>
+  </section>
+
+  <section class="modal" id="endModal" hidden>
+    <div class="modal-card">
+      <p class="eyebrow" id="endEyebrow">Battle Complete</p>
+      <h2 id="endTitle">Victory</h2>
+      <p id="endText"></p>
+      <button class="primary-button" id="restartButton">Restart</button>
+    </div>
+  </section>
 
   <script src="app.js"></script>
 </body>
