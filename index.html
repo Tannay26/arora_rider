@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Arora Rider original fantasy forest platformer">
+  <meta name="description" content="Arora Rider original fantasy platform adventure">
   <title>Arora Rider - Platform Adventure</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,18 +15,18 @@
         <h1>Arora Rider</h1>
       </div>
       <div class="level-panel">
-        <strong id="levelName">Level 1 - Forest Ruins Tutorial</strong>
-        <small>A/D or Arrows run. Space/W/Up jump. Shift/E charge. F spark.</small>
+        <strong id="levelName">Level 1 - Forest Trail</strong>
+        <small id="levelHint">A/D or Arrows run. Space/W/Up jump or fly. Wall jump from walls.</small>
       </div>
     </header>
 
     <section class="hud-row">
-      <div class="stat-pill">HP <strong id="hpText">3 / 3</strong></div>
+      <div class="stat-pill">HP <strong id="hpText">4 / 4</strong></div>
       <div class="stat-pill">Gems <strong id="gemsText">0 / 0</strong></div>
       <div class="stat-pill">Lives <strong id="livesText">3</strong></div>
       <div class="stat-pill">Keys <strong id="keysText">0</strong></div>
-      <div class="stat-pill power-pill"><span id="powerIcon">--</span> <strong id="powerText">No power</strong></div>
-      <div class="stat-pill">Shield <strong id="shieldText">0</strong></div>
+      <div class="stat-pill power-pill"><span id="powerIcon">--</span> <strong id="powerText">No ability</strong></div>
+      <div class="stat-pill">Stone Skin <strong id="shieldText">0</strong></div>
       <div class="stat-pill">Status <strong id="statusText">Explore</strong></div>
     </section>
 
@@ -41,6 +41,7 @@
       <p class="eyebrow" id="endEyebrow">Level Complete</p>
       <h2 id="endTitle">Victory</h2>
       <p id="endText"></p>
+      <div class="ability-choices" id="abilityChoices" hidden></div>
       <button class="primary-button" id="restartButton">Continue</button>
     </div>
   </section>

@@ -1,70 +1,146 @@
-(() => {
+﻿(() => {
   "use strict";
 
-  const ground = (x, w, y = 610) => ({ x, y, w, h: 110, type: "ground" });
-  const ruin = (x, y, w) => ({ x, y, w, h: 32, type: "ruin" });
-  const wood = (x, y, w) => ({ x, y, w, h: 26, type: "wood" });
-  const move = (x, y, w, axis, from, to, speed) => ({ x, y, startX: x, startY: y, w, h: 26, type: "moving", moving: { axis, from, to, speed, dir: 1 } });
-  const fall = (x, y, w) => ({ x, y, startY: y, w, h: 26, type: "falling", falling: { armed: false, delay: .45, timer: 0 } });
+  const ground = (x, w, y = 610, type = "ground") => ({ x, y, w, h: 110, type });
+  const plat = (x, y, w, type = "ruin") => ({ x, y, w, h: 28, type, oneWay: true });
+  const move = (x, y, w, axis, from, to, speed, type = "moving") => ({ x, y, w, h: 26, type, oneWay: true, moving: { axis, from, to, speed, dir: 1 } });
+  const fall = (x, y, w) => ({ x, y, w, h: 24, type: "falling", oneWay: true, falling: { armed: false, delay: .55, timer: 0 } });
+  const bridge = (x, y, w) => ({ x, y, w, h: 22, type: "bridge", oneWay: true, falling: { armed: false, delay: .85, timer: 0 } });
   const block = (x, y) => ({ x, y, w: 48, h: 48, broken: false });
+  const hazard = (kind, x, y, w, h, extra = {}) => ({ kind, x, y, w, h, t: 0, ...extra });
+  const pad = (x, y) => ({ x, y, w: 64, h: 18 });
+  const gemLine = (x, y, count, step = 48) => Array.from({ length: count }, (_, i) => [x + i * step, y]);
 
-  AR.LEVELS = [
-    {
-      name: "Level 1 - Forest Ruins Tutorial",
-      theme: "forest",
-      width: 4550,
+  const THEMES = [
+    { key: "forest", title: "Forest Trail", mechanics: ["checkpoint statues", "spike pits", "jump pads"] },
+    { key: "ruins", title: "Forgotten Ruins", mechanics: ["collapsing bridges", "locked gates", "secret rooms"] },
+    { key: "crystal", title: "Crystal Caverns", mechanics: ["underground tunnels", "rotating blades", "falling stone"] },
+    { key: "frozen", title: "Frozen Mountains", mechanics: ["icy slopes", "strong wind", "snowy moving lifts"] },
+    { key: "volcano", title: "Volcanic Forge", mechanics: ["lava pools", "rolling boulders", "fire hazards"] },
+    { key: "sky", title: "Floating Kingdom", mechanics: ["long moving platforms", "wind zones", "floating routes"] },
+    { key: "jungle", title: "Ancient Jungle", mechanics: ["waterfalls", "swinging logs", "hidden treasure rooms"] },
+    { key: "citadel", title: "Dark Citadel", mechanics: ["all hazards", "boss introduction", "secret exit"] },
+  ];
+
+  AR.LEVELS = THEMES.map((theme, index) => buildAdventureLevel(index, theme));
+
+  function buildAdventureLevel(index, theme) {
+    const width = 13800 + index * 650;
+    const platforms = [];
+    const hazards = [];
+    const pads = [];
+    const blocks = [];
+    const gems = [];
+    const hiddenGems = [];
+    const stars = [];
+    const enemies = [];
+    const keys = [];
+    const gates = [];
+    const checkpoints = [];
+    const secretRooms = [];
+    const tunnels = [];
+
+    addGroundRun(platforms, 0, width, index);
+    platforms.push(ground(width - 980, 980, 610, index === 3 ? "ice" : "ground"));
+    const sections = Math.floor(width / 900);
+    for (let s = 0; s < sections; s++) {
+      const x = 680 + s * 850;
+      const high = 430 - (s % 3) * 38;
+      const mid = 500 - (s % 2) * 25;
+      platforms.push(plat(x, mid, 210 + (s % 3) * 34, s % 2 ? "wood" : "ruin"));
+      platforms.push(plat(x + 330, high, 180 + (s % 4) * 22, theme.key === "frozen" ? "ice" : "ruin"));
+      if (s % 3 === 1) platforms.push(move(x + 620, 470, 180, "x", x + 560, x + 850, 78 + index * 4));
+      if (s % 4 === 2) platforms.push(move(x + 450, 380, 170, "y", 330, 500, 58 + index * 3));
+      if (s % 5 === 3) platforms.push(fall(x + 760, 410, 170));
+      if (s % 6 === 4) platforms.push(bridge(x + 140, 550, 230));
+
+      gems.push(...gemLine(x + 35, mid - 42, 3));
+      if (s % 2 === 0) gems.push(...gemLine(x + 360, high - 44, 3));
+      if (s % 4 === 0) hiddenGems.push(...gemLine(x + 210, 300, 3));
+      if (s % 5 === 0) stars.push({ x: x + 520, y: high - 54, w: 34, h: 34, taken: false });
+      if (s % 3 === 0) checkpoints.push({ x: x + 720, y: 514, active: false });
+
+      const enemyType = enemyFor(index, s);
+      enemies.push({ type: enemyType, x: x + 120, y: enemyY(enemyType, mid), patrol: [x - 20, x + 520] });
+      if (s % 4 === 1) enemies.push({ type: enemyFor(index + 1, s), x: x + 500, y: 500, patrol: [x + 360, x + 820] });
+
+      if (s % 3 === 2) hazards.push(hazard("spikes", x + 30, 584, 110, 26));
+      if (s >= 2 && s % 4 === 0) hazards.push(hazard("blade", x + 500, 452, 54, 54, { radius: 66, speed: 2.6 + index * .18 }));
+      if (index >= 1 && s % 5 === 2) hazards.push(hazard("log", x + 260, 370, 140, 28, { pivotX: x + 330, pivotY: 330, length: 150, speed: 1.25 }));
+      if (index >= 4 && s % 4 === 1) hazards.push(hazard("lava", x + 620, 600, 230, 36));
+      if (index >= 4 && s % 5 === 0) hazards.push(hazard("boulder", x + 700, 532, 58, 58, { from: x + 620, to: x + 990, speed: 105 }));
+      if (index >= 3 && s % 4 === 3) hazards.push(hazard("wind", x + 120, 250, 420, 310, { force: index === 5 ? 640 : -460 }));
+      if (index >= 6 && s % 4 === 2) hazards.push(hazard("waterfall", x + 640, 180, 86, 430, { force: 520 }));
+      if (s % 6 === 1) pads.push(pad(x + 760, 590));
+      if (s % 7 === 2) {
+        blocks.push(block(x + 95, 562), block(x + 143, 562), block(x + 191, 562));
+        secretRooms.push({ x: x + 70, y: 250, w: 320, h: 140 });
+      }
+    }
+
+    const keyX = width - 1750;
+    keys.push({ x: keyX, y: 350, taken: false });
+    gates.push({ x: width - 680, y: 490, w: 52, h: 120, open: false });
+    checkpoints.push({ x: Math.floor(width * .28), y: 514, active: false }, { x: Math.floor(width * .55), y: 514, active: false }, { x: Math.floor(width * .78), y: 514, active: false });
+    tunnels.push({ x: Math.floor(width * .42), y: 568, w: 520, h: 80 });
+    secretRooms.push({ x: Math.floor(width * .64), y: 235, w: 430, h: 160 });
+    hiddenGems.push(...gemLine(Math.floor(width * .64) + 40, 300, 6));
+
+    if (index === 7) {
+      enemies.push({ type: "guardian", x: width - 1120, y: 502, patrol: [width - 1250, width - 760], boss: true });
+      hazards.push(hazard("blade", width - 980, 505, 70, 70, { radius: 86, speed: 4 }));
+    }
+
+    return {
+      name: `Level ${index + 1} - ${theme.title}`,
+      theme: theme.key,
+      mechanics: theme.mechanics,
+      width,
       height: 720,
       spawn: { x: 120, y: 420 },
-      portal: { x: 4300, y: 414, w: 92, h: 150 },
-      platforms: [ground(0, 660), ground(760, 650), ground(1540, 560), ground(2240, 620), ground(3000, 620), ground(3740, 760), ruin(460, 470, 220), ruin(920, 410, 260), wood(1320, 500, 190), ruin(1830, 385, 280), wood(2530, 455, 250), move(3290, 455, 180, "y", 390, 510, 55), fall(3550, 390, 160)],
-      gems: [[260,540],[530,420],[650,420],[1010,360],[1120,360],[1390,450],[1880,335],[1990,335],[2330,540],[2600,405],[3340,340],[3600,340],[3840,540],[3960,540]],
-      hiddenGems: [[1190,250],[3470,250]],
-      powerups: [{ type: "shield", x: 970, y: 355 }, { type: "charge", x: 1870, y: 330 }, { type: "spark", x: 3150, y: 545 }],
-      enemies: [{ type: "beetle", x: 860, y: 548, patrol: [760,1410] }, { type: "frog", x: 1660, y: 548, patrol: [1540,2100] }, { type: "snail", x: 2390, y: 548, patrol: [2240,2860] }, { type: "moth", x: 3340, y: 360, patrol: [3160,3620] }, { type: "beetle", x: 3920, y: 548, patrol: [3740,4420] }],
-      hazards: [{ x: 675, y: 584, w: 74, h: 26 }, { x: 1460, y: 584, w: 66, h: 26 }, { x: 2890, y: 584, w: 88, h: 26 }],
-      pads: [{ x: 1465, y: 560, w: 58, h: 18 }],
-      blocks: [block(2760, 562), block(2808, 562)],
-      keys: [{ x: 3440, y: 340, taken: false }],
-      gates: [{ x: 4070, y: 490, w: 48, h: 120, open: false }],
-      checkpoints: [{ x: 2100, y: 518, active: false }, { x: 3460, y: 330, active: false }]
-    },
-    {
-      name: "Level 2 - Sky Vines",
-      theme: "sky",
-      width: 5050,
-      height: 720,
-      spawn: { x: 100, y: 350 },
-      portal: { x: 4810, y: 300, w: 92, h: 150 },
-      platforms: [ground(0, 420, 630), ruin(540, 520, 230), move(880, 470, 190, "x", 820, 1110, 80), ruin(1260, 430, 230), fall(1570, 390, 170), move(1850, 430, 200, "y", 350, 505, 70), ruin(2180, 360, 260), wood(2540, 465, 210), move(2850, 410, 190, "x", 2780, 3150, 95), ruin(3300, 355, 260), fall(3650, 455, 180), ruin(3990, 400, 240), move(4380, 350, 190, "y", 280, 430, 65), ruin(4740, 450, 270)],
-      gems: [[610,470],[930,420],[1340,380],[1610,340],[1910,320],[2260,310],[2620,420],[2920,360],[3380,305],[3700,405],[4080,350],[4430,250],[4820,250]],
-      hiddenGems: [[1120,265],[2350,210],[4520,190]],
-      powerups: [{ type: "feather", x: 1310, y: 375 }, { type: "slow", x: 2870, y: 355 }, { type: "giant", x: 4010, y: 345 }],
-      enemies: [{ type: "moth", x: 620, y: 430, patrol: [520,760] }, { type: "frog", x: 1330, y: 368, patrol: [1260,1490] }, { type: "bat", x: 2240, y: 285, patrol: [2160,2460] }, { type: "moth", x: 3370, y: 280, patrol: [3300,3560] }, { type: "beetle", x: 4040, y: 338, patrol: [3990,4230] }],
-      hazards: [{ x: 430, y: 606, w: 90, h: 24 }, { x: 2075, y: 584, w: 82, h: 26 }, { x: 3840, y: 584, w: 130, h: 26 }],
-      pads: [{ x: 760, y: 590, w: 60, h: 18 }, { x: 2490, y: 575, w: 60, h: 18 }],
-      blocks: [block(3460, 307), block(3508, 307), block(3556, 307)],
-      keys: [{ x: 3710, y: 405, taken: false }],
-      gates: [{ x: 4615, y: 330, w: 48, h: 120, open: false }],
-      checkpoints: [{ x: 2050, y: 360, active: false }, { x: 3860, y: 355, active: false }]
-    },
-    {
-      name: "Level 3 - Crystal Caves",
-      theme: "cave",
-      width: 5350,
-      height: 720,
-      spawn: { x: 110, y: 420 },
-      portal: { x: 5120, y: 414, w: 92, h: 150 },
-      platforms: [ground(0, 540), ground(680, 420), ruin(1220, 505, 220), ground(1560, 460), move(2120, 495, 170, "x", 2030, 2360, 70), ruin(2520, 430, 230), fall(2850, 385, 170), ground(3160, 540), ruin(3820, 500, 220), move(4170, 440, 180, "y", 350, 520, 62), ruin(4520, 350, 260), ground(4870, 480)],
-      gems: [[300,540],[740,540],[1260,455],[1660,540],[1820,540],[2180,445],[2580,380],[2880,335],[3240,540],[3950,450],[4230,330],[4590,300],[4960,540]],
-      hiddenGems: [[1360,305],[3070,245],[4690,185]],
-      powerups: [{ type: "charge", x: 760, y: 540 }, { type: "shield", x: 2540, y: 380 }, { type: "feather", x: 4210, y: 325 }],
-      enemies: [{ type: "snail", x: 720, y: 548, patrol: [680,1100] }, { type: "bat", x: 1350, y: 405, patrol: [1200,1480] }, { type: "frog", x: 1690, y: 548, patrol: [1560,2020] }, { type: "snail", x: 3290, y: 548, patrol: [3160,3700] }, { type: "bat", x: 4620, y: 270, patrol: [4520,4780] }],
-      hazards: [{ x: 565, y: 584, w: 105, h: 26 }, { x: 1120, y: 584, w: 100, h: 26 }, { x: 2420, y: 584, w: 96, h: 26 }, { x: 2990, y: 584, w: 150, h: 26 }, { x: 4775, y: 584, w: 90, h: 26 }],
-      pads: [{ x: 1150, y: 590, w: 58, h: 18 }, { x: 3740, y: 590, w: 58, h: 18 }],
-      blocks: [block(930, 562), block(978, 562), block(1026, 562), block(4440, 302), block(4488, 302)],
-      keys: [{ x: 4720, y: 300, taken: false }],
-      gates: [{ x: 5000, y: 490, w: 48, h: 120, open: false }],
-      checkpoints: [{ x: 2360, y: 448, active: false }, { x: 4020, y: 452, active: false }]
+      portal: { x: width - 250, y: 414, w: 96, h: 150 },
+      secretExit: index % 2 === 1 ? { x: width - 1250, y: 260, w: 80, h: 120 } : null,
+      platforms,
+      gems,
+      hiddenGems,
+      powerups: stars,
+      enemies,
+      hazards,
+      pads,
+      blocks,
+      keys,
+      gates,
+      checkpoints,
+      secretRooms,
+      tunnels,
+    };
+  }
+
+  function addGroundRun(platforms, widthStart, width, index) {
+    let x = widthStart;
+    while (x < width - 280) {
+      const segment = 540 + ((x / 430) % 4) * 70;
+      const y = index === 3 && Math.floor(x / 900) % 3 === 1 ? 600 : 610;
+      const type = index === 3 && Math.floor(x / 1000) % 2 === 1 ? "ice" : "ground";
+      platforms.push(ground(x, Math.min(segment, width - x), y, type));
+      const gap = 130 + (Math.floor(x / 780) % 3) * 35;
+      x += segment + gap;
     }
-  ];
+  }
+
+  function enemyFor(index, s) {
+    const lists = [
+      ["wolf", "boar", "spider"],
+      ["wolf", "boar", "spider", "troll"],
+      ["spider", "serpent", "troll", "raven"],
+      ["ice", "raven", "wolf", "boar"],
+      ["golem", "serpent", "boar", "raven"],
+      ["raven", "guardian", "wolf", "ice"],
+      ["serpent", "spider", "giant", "raven"],
+      ["guardian", "giant", "golem", "raven", "ice"],
+    ];
+    return lists[Math.min(index, lists.length - 1)][s % lists[Math.min(index, lists.length - 1)].length];
+  }
+  function enemyY(type, platformY) { return AR.ENEMY_INFO[type]?.flying ? platformY - 105 : platformY - (AR.ENEMY_INFO[type]?.h || 48); }
 })();
+

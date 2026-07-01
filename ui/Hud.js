@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   "use strict";
 
   AR.Hud = class {
@@ -11,15 +11,16 @@
     update() {
       const p = this.game.player, level = this.game.level;
       this.hp.textContent = `${p.hp} / ${p.maxHp}`; this.gems.textContent = `${this.game.gemsCollected} / ${level.gems.length}`; this.lives.textContent = p.lives;
-      this.keys.textContent = p.keys; this.status.textContent = this.game.status; this.shield.textContent = p.shieldHits;
-      if (p.activePower) { const cfg = AR.POWERS[p.activePower]; this.powerIcon.textContent = cfg.icon; this.power.textContent = `${cfg.name} ${p.powerTimers[p.activePower].toFixed(1)}s`; }
-      else { this.powerIcon.textContent = "--"; this.power.textContent = "No power"; }
+      this.keys.textContent = p.keys; this.status.textContent = this.game.status; this.shield.textContent = p.activeAbility === "stone" ? "1" : "0";
+      if (p.activeAbility) { const cfg = AR.STAR_ABILITIES[p.activeAbility]; this.powerIcon.textContent = cfg.icon; this.power.textContent = `${cfg.name} - Active`; }
+      else { this.powerIcon.textContent = "--"; this.power.textContent = "No ability"; }
       this.debug.innerHTML = [
         `Level: ${this.game.levelIndex + 1} / ${AR.LEVELS.length}`,
         `Hero: ${Math.round(p.x)}, ${Math.round(p.y)}`,
         `Camera: ${Math.round(this.game.camera.x)}`,
         `Enemies: ${level.enemies.filter((e) => !e.dead).length}`,
-        `Power timers: ${Object.entries(p.powerTimers).filter(([, v]) => v > 0).map(([k, v]) => `${k}:${v.toFixed(0)}`).join(" ") || "none"}`,
+        `Ability: ${p.activeAbility || "none"}`,
+        `Map width: ${level.width}`,
       ].join("<br>");
     }
   };

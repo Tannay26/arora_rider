@@ -1,17 +1,17 @@
-(() => {
+﻿(() => {
   "use strict";
 
   AR.InputSystem = class {
     constructor() {
       this.keys = new Set();
       this.jumpQueued = false;
-      this.chargeQueued = false;
-      this.sparkQueued = false;
+      this.fireQueued = false;
       window.addEventListener("keydown", (e) => {
+        if (!this.keys.has(e.code)) {
+          if (["Space", "KeyW", "ArrowUp"].includes(e.code)) this.jumpQueued = true;
+          if (["Space", "KeyF", "KeyX"].includes(e.code)) this.fireQueued = true;
+        }
         this.keys.add(e.code);
-        if (["Space", "KeyW", "ArrowUp"].includes(e.code)) this.jumpQueued = true;
-        if (["ShiftLeft", "ShiftRight", "KeyE"].includes(e.code)) this.chargeQueued = true;
-        if (["KeyF", "KeyX"].includes(e.code)) this.sparkQueued = true;
         if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) e.preventDefault();
       });
       window.addEventListener("keyup", (e) => this.keys.delete(e.code));
@@ -21,8 +21,8 @@
       const right = this.keys.has("KeyD") || this.keys.has("ArrowRight");
       return right - left;
     }
+    jumpHeld() { return this.keys.has("Space") || this.keys.has("KeyW") || this.keys.has("ArrowUp"); }
     consumeJump() { const v = this.jumpQueued; this.jumpQueued = false; return v; }
-    consumeCharge() { const v = this.chargeQueued; this.chargeQueued = false; return v; }
-    consumeSpark() { const v = this.sparkQueued; this.sparkQueued = false; return v; }
+    consumeFire() { const v = this.fireQueued; this.fireQueued = false; return v; }
   };
 })();
