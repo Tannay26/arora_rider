@@ -11,7 +11,32 @@
       this.activeAbility = null; this.abilityStatus = "Inactive"; this.fireCooldown = 0; this.landSquash = 0;
       this.animationFrame = 0;
       this.animationTimer = 0;
-      this.animationState = "idle";
+      this.animationState = "idle"; 
+      updateAnimation(dt, axis) {
+  if (!this.grounded) {
+    this.animationState = "jump";
+    this.animationFrame = 0;
+    return;
+  }
+
+  if (Math.abs(this.vx) > 30 && axis !== 0) {
+    this.animationState = "run";
+    this.animationTimer += dt;
+
+    const frameDuration = 0.09;
+
+    if (this.animationTimer >= frameDuration) {
+      this.animationTimer -= frameDuration;
+      this.animationFrame = (this.animationFrame + 1) % 8;
+    }
+
+    return;
+  }
+
+  this.animationState = "idle";
+  this.animationFrame = 0;
+  this.animationTimer = 0;
+}
     }
     update(dt, input, physics, game) {
       this.prevGrounded = this.grounded;
