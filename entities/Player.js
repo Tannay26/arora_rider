@@ -9,6 +9,9 @@
       this.hp = 4; this.maxHp = 4; this.lives = 3; this.keys = 0;
       this.invuln = 0; this.walkTime = 0; this.coyote = 0; this.jumpBuffer = 0; this.wallSlide = false;
       this.activeAbility = null; this.abilityStatus = "Inactive"; this.fireCooldown = 0; this.landSquash = 0;
+      this.animationFrame = 0;
+      this.animationTimer = 0;
+      this.animationState = "idle";
     }
     update(dt, input, physics, game) {
       this.prevGrounded = this.grounded;
