@@ -38,7 +38,7 @@
       physics.moveActor(this, dt);
       if (this.riding) { this.x += this.riding.dx || 0; this.y += this.riding.dy || 0; }
       if (!this.prevGrounded && this.grounded && this.vy === 0) { this.landSquash = .18; game.burst(this.x + this.w / 2, this.y + this.h, "dust", 8); }
-      this.walkTime += Math.abs(this.x - oldX) * .045; this.landSquash = Math.max(0, this.landSquash - dt);
+      this.walkTime += Math.abs(this.x - oldX) * .045; this.landSquash = Math.max(0, this.landSquash - dt); this.updateAnimation(dt, axis);
       this.applyZones(game, dt);
     }
     applyZones(game, dt) {
